@@ -23,11 +23,12 @@ Strona startowa z kartami podsumowującymi: liczba lokali, aktywni najemcy, rach
 - Najemcy: osoby fizyczne i firmy (NIP), historia najemców dla każdego lokalu
 
 ### Rachunki
-- Wystawianie miesięcznych rachunków: czynsz, prąd, woda, gaz, MPGK, sprzątanie, inne
+- Wystawianie miesięcznych rachunków: czynsz, prąd, woda, MPGK, sprzątanie, inne
 - Podgląd rachunku i eksport do PDF (z polskimi znakami, konto bankowe, kwota słownie)
 - Wiele kont bankowych — wybór konta przy wystawianiu rachunku
 - Filtrowanie po miesiącu, roku, lokalu i statusie
 - Oznaczanie rachunków jako opłacone
+- Widok wszystkich rachunków wybranego najemcy (z filtrem roku i podglądem PDF)
 
 ### Import rachunków z pliku
 Kreator 3-krokowy: wybór pliku → mapowanie kolumn → podgląd i import.
@@ -47,9 +48,10 @@ Kreator 3-krokowy: wybór pliku → mapowanie kolumn → podgląd i import.
 - Historia remontów z opisem prac i kosztami
 
 ### Rozliczenia ze współwłaścicielami
-- Automatyczne rozliczenie za wybrany okres (zakres miesięcy)
+- Ręczne pozycje kosztowe i przychodowe budynku (podatek od nieruchomości, ubezpieczenie, wywóz śmieci itp.) — data, numer dokumentu/FV, nazwa, kwota, typ (wydatek / przychód)
+- Automatyczne rozliczenie za wybrany okres (zakres miesięcy): przychody z rachunków + przychody dodatkowe, koszty remontów, przeglądów i dodatkowe
 - Podział przychodów i kosztów według udziałów procentowych
-- Eksport rozliczenia do PDF
+- Eksport rozliczenia do PDF z zestawieniem ręcznych pozycji
 
 ### Ustawienia
 - Ścieżka do bazy danych (lokalna lub sieciowa `\\SERWER\...`)
