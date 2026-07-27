@@ -1,5 +1,9 @@
 # Zarzadca — Aplikacja do zarządzania kamienicą
 
+![Zrzut ekranu – pulpit](screenshots/about.png)
+
+![Zrzut ekranu – główny widok](screenshots/main.png)
+
 ## Opis
 
 Desktopowa aplikacja do kompleksowego zarządzania starą kamienicą czynszową.
@@ -109,4 +113,4 @@ przez wielu użytkowników bez blokowania.
 
 ## Autor
 
-[MarcinCichy](https://gitlab.com/MarcinCichy)
+[Marcin Cichy](https://gitlab.com/MarcinCichy)
