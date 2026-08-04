@@ -1,116 +1,172 @@
-# Zarzadca — Aplikacja do zarządzania kamienicą
+# Zarzadca
 
-![Zrzut ekranu – pulpit](screenshots/about.png)
+Desktopowa aplikacja do zarzadzania kamienica czynszowa: lokale, najemcy,
+rachunki, przeglady, remonty, waloryzacja czynszu, rozliczenia ze
+wspolwlascicielami oraz kopie zapasowe bazy.
 
-![Zrzut ekranu – główny widok](screenshots/main.png)
+![Zrzut ekranu - ustawienia](screenshots/about.png)
 
-## Opis
+![Zrzut ekranu - glowny widok](screenshots/main.png)
 
-Desktopowa aplikacja do kompleksowego zarządzania starą kamienicą czynszową.
-Umożliwia prowadzenie ewidencji lokali i najemców, wystawianie miesięcznych rachunków,
-coroczną waloryzację czynszu według wskaźnika GUS, ewidencję przeglądów i remontów
-oraz automatyczne rozliczenia ze współwłaścicielami.
-
-Baza danych SQLite może działać lokalnie lub na dysku sieciowym — każdy komputer
-w sieci uruchamia tę samą aplikację i wskazuje ścieżkę do wspólnego pliku bazy.
-
----
-
-## Funkcjonalności
+## Funkcje
 
 ### Pulpit
-Strona startowa z kartami podsumowującymi: liczba lokali, aktywni najemcy, rachunki z bieżącego miesiąca, zbliżające się przeglądy. Kliknięcie karty przechodzi do odpowiedniego panelu.
+
+Strona startowa z kartami podsumowujacymi liczbe lokali, aktywnych najemcow,
+rachunki z biezacego miesiaca, zaleglosci oraz zblizajace sie przeglady.
 
 ### Lokale i Najemcy
-- Ewidencja lokali (numer, piętro, powierzchnia, liczba pokoi)
-- Domyślne stawki dla lokalu (czynsz, prąd, MPGK, sprzątanie) — automatycznie wypełniają nowy rachunek
-- Najemcy: osoby fizyczne i firmy (NIP), historia najemców dla każdego lokalu
+
+- Ewidencja lokali: numer, pietro, powierzchnia, liczba pokoi i opis.
+- Domyslne stawki lokalu: czynsz, prad, MPGK i koszty sprzatania.
+- Najemcy jako osoby fizyczne albo firmy z NIP.
+- Historia najemcow przypisana do lokalu.
 
 ### Rachunki
-- Wystawianie miesięcznych rachunków: czynsz, prąd, woda, MPGK, sprzątanie, inne
-- Podgląd rachunku i eksport do PDF (z polskimi znakami, konto bankowe, kwota słownie)
-- Wiele kont bankowych — wybór konta przy wystawianiu rachunku
-- Filtrowanie po miesiącu, roku, lokalu i statusie
-- Oznaczanie rachunków jako opłacone
-- Widok wszystkich rachunków wybranego najemcy (z filtrem roku i podglądem PDF)
 
-### Import rachunków z pliku
-Kreator 3-krokowy: wybór pliku → mapowanie kolumn → podgląd i import.
-- **Excel** (`.xlsx`, `.xls`) — dowolny układ kolumn, ręczne mapowanie
-- **PDF z tabelą danych** — generyczny ekstraktor tabel
-- **PDF-faktura** (format `RACHUNEK NR X/RRRR`) — dedykowany parser: automatycznie wyciąga rok, miesiąc i kwoty z tytułu i tabeli; lokalizuje lokal po nazwie najemcy
+- Wystawianie miesiecznych rachunkow.
+- Pozycje: czynsz, prad, woda, MPGK, sprzatanie i inne.
+- Wiele kont bankowych do wyboru na rachunku.
+- Filtrowanie po miesiacu, roku, lokalu i statusie.
+- Oznaczanie rachunkow jako oplacone.
+- Podglad rachunku i eksport do PDF.
 
-### Waloryzacja czynszu
-- Pobieranie aktualnego wskaźnika CPI z API BDL GUS (zmienna 217230)
-- Podgląd nowych stawek dla wszystkich lokali przed zastosowaniem
-- Jednorazowe zastosowanie waloryzacji z zapisem w historii
-- Historia poprzednich waloryzacji z datami i procentami
+### Import rachunkow
 
-### Przeglądy i Remonty
-- Ewidencja przeglądów technicznych z datą następnego przeglądu
-- Alerty o zbliżających się terminach (widoczne na pulpicie)
-- Historia remontów z opisem prac i kosztami
+- Import z Excela (`.xlsx`, `.xls`) z recznym mapowaniem kolumn.
+- Import z PDF z tabelami danych.
+- Dedykowany parser PDF dla rachunkow w formacie `RACHUNEK NR X/RRRR`.
 
-### Rozliczenia ze współwłaścicielami
-- Ręczne pozycje kosztowe i przychodowe budynku (podatek od nieruchomości, ubezpieczenie, wywóz śmieci itp.) — data, numer dokumentu/FV, nazwa, kwota, typ (wydatek / przychód)
-- Automatyczne rozliczenie za wybrany okres (zakres miesięcy): przychody z rachunków + przychody dodatkowe, koszty remontów, przeglądów i dodatkowe
-- Podział przychodów i kosztów według udziałów procentowych
-- Eksport rozliczenia do PDF z zestawieniem ręcznych pozycji
+### Waloryzacja
+
+- Pobieranie wskaznika CPI z API BDL GUS.
+- Podglad nowych stawek przed zastosowaniem.
+- Zapis historii waloryzacji.
+- Generowanie wyrownania lutowego.
+
+### Przeglady i Remonty
+
+- Ewidencja przegladow technicznych.
+- Alerty o zblizajacych sie terminach.
+- Historia remontow, kosztow i wykonawcow.
+
+### Rozliczenia
+
+- Rozliczenia ze wspolwlascicielami wedlug udzialow procentowych.
+- Reczne pozycje kosztowe i przychodowe budynku.
+- Eksport rozliczenia do PDF.
 
 ### Ustawienia
-- Ścieżka do bazy danych (lokalna lub sieciowa `\\SERWER\...`)
-- Dane kamienicy: adres, właściciel, domyślne konto bankowe
 
----
+- Lokalna albo sieciowa sciezka do bazy SQLite.
+- Obsluga wielu budynkow.
+- Konta bankowe.
+- Kopie zapasowe i przywracanie bazy.
 
 ## Technologia
 
 | Element | Technologia |
 |---|---|
-| Język | Python 3.11+ |
-| GUI | PyQt6 |
-| Baza danych | SQLite (WAL mode) |
+| Jezyk | Python 3.11+ |
+| GUI | PySide6 / Qt |
+| Baza danych | SQLite, WAL mode |
 | Import Excel | openpyxl |
-| Import / analiza PDF | pdfplumber |
+| Import PDF | pdfplumber |
 | Eksport PDF | reportlab |
-| Dane GUS | REST API BDL (bdl.stat.gov.pl) |
+| HTTP / GUS | requests |
+| Licencje | cryptography, podpis RSA |
+| Testy | pytest |
 
----
+## Instalacja developerska
 
-## Instalacja
-
-```bash
+```powershell
 git clone https://gitlab.com/MarcinCichy/zarzadca.git
 cd zarzadca
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\activate
+python -m pip install -r requirements.txt
+```
+
+For an exact copy of the dependency versions used during development, install
+from the lock file instead:
+
+```powershell
+python -m pip install -r requirements-lock.txt
 ```
 
 ## Uruchomienie
 
-```bash
+```powershell
 python main.py
 ```
 
-Przy pierwszym uruchomieniu aplikacja tworzy plik `zarzadca.db` w katalogu projektu.
-Ścieżkę można zmienić w **Ustawienia → Baza danych**.
+Przy pierwszym uruchomieniu aplikacja tworzy lub otwiera baze wskazana w
+`config.json`. Domyslnie jest to `zarzadca.db` w katalogu projektu. Sciezke mozna
+zmienic w aplikacji w panelu `Ustawienia -> Baza danych`.
 
----
+## Testy
+
+```powershell
+python -m pytest
+```
+
+Testy uzywaja osobnych baz SQLite tworzonych w katalogu `test_runtime_dbs/`.
+Nie korzystaja z lokalnego pliku `zarzadca.db`.
+
+## Diagnostyka srodowiska
+
+Przy roznicach wygladu albo zachowania miedzy komputerami uruchom:
+
+```powershell
+python tools\diagnose_env.py
+```
+
+Skrypt wypisuje wersje Pythona, PySide6, Qt, aktywny styl Qt, dostepne style Qt
+oraz sciezke aktualnie skonfigurowanej bazy.
 
 ## Konfiguracja sieci lokalnej
 
-Aby korzystać z jednej bazy na wielu komputerach:
+Aby korzystac z jednej bazy na wielu komputerach:
 
-1. Umieść plik `zarzadca.db` na dysku sieciowym (np. `\\SERWER\Wspolny\zarzadca.db`)
-2. Na każdym komputerze zainstaluj aplikację
-3. W **Ustawienia → Baza danych** wpisz ścieżkę sieciową i kliknij **Zapisz i połącz**
+1. Umiesc plik `zarzadca.db` na dysku sieciowym, np. `\\SERWER\Wspolny\zarzadca.db`.
+2. Na kazdym komputerze zainstaluj aplikacje.
+3. W `Ustawienia -> Baza danych` wpisz sciezke sieciowa.
+4. Kliknij `Zapisz i polacz`.
 
-Baza działa w trybie WAL (Write-Ahead Logging), który umożliwia jednoczesny odczyt
-przez wielu użytkowników bez blokowania.
+Baza dziala w trybie WAL, ktory umozliwia jednoczesny odczyt przez wielu
+uzytkownikow. Uprawnienia do pliku bazy i katalogu z backupami powinny byc
+kontrolowane na poziomie Windows lub udzialu sieciowego.
 
----
+## Licencje
+
+Aplikacja szuka pliku licencji w:
+
+```text
+%APPDATA%\Zarzadca\license.lic
+```
+
+Do generowania licencji sluzy:
+
+```powershell
+python tools\license_generator.py
+```
+
+Generator wymaga prywatnego klucza `tools/private.pem`. Tego pliku nie wolno
+commitowac ani wysylac klientom.
+
+## Build instalatora
+
+Pipeline budowania jest opisany w:
+
+```powershell
+tools\build.ps1
+tools\installer.iss
+```
+
+Ten obszar wymaga osobnego uporzadkowania dokumentacji, bo historycznie projekt
+korzystal z PyQt6/PyInstaller, a aktualny kod uzywa PySide6 i build skryptu
+opartego o Nuitka.
 
 ## Autor
 
-[Marcin Cichy](https://gitlab.com/MarcinCichy)
+Marcin Cichy
