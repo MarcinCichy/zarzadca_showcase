@@ -1,65 +1,65 @@
-# Zarzadca
+# Zarządca
 
-Desktopowa aplikacja do zarzadzania kamienica czynszowa: lokale, najemcy,
-rachunki, przeglady, remonty, waloryzacja czynszu, rozliczenia ze
-wspolwlascicielami oraz kopie zapasowe bazy.
+Desktopowa aplikacja do zarządzania kamienicą czynszową: lokale, najemcy,
+rachunki, przeglądy, remonty, waloryzacja czynszu, rozliczenia ze
+współwłaścicielami oraz kopie zapasowe bazy.
 
 ![Zrzut ekranu - ustawienia](screenshots/about.png)
 
-![Zrzut ekranu - glowny widok](screenshots/main.png)
+![Zrzut ekranu - główny widok](screenshots/main.png)
 
 ## Funkcje
 
 ### Pulpit
 
-Strona startowa z kartami podsumowujacymi liczbe lokali, aktywnych najemcow,
-rachunki z biezacego miesiaca, zaleglosci oraz zblizajace sie przeglady.
+Strona startowa z kartami podsumowującymi liczbę lokali, aktywnych najemców,
+rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy.
 
 ### Lokale i Najemcy
 
-- Ewidencja lokali: numer, pietro, powierzchnia, liczba pokoi i opis.
-- Domyslne stawki lokalu: czynsz, prad, MPGK i koszty sprzatania.
+- Ewidencja lokali: numer, piętro, powierzchnia, liczba pokoi i opis.
+- Domyślne stawki lokalu: czynsz, prąd, MPGK i koszty sprzątania.
 - Najemcy jako osoby fizyczne albo firmy z NIP.
-- Historia najemcow przypisana do lokalu.
+- Historia najemców przypisana do lokalu.
 
 ### Rachunki
 
-- Wystawianie miesiecznych rachunkow.
-- Pozycje: czynsz, prad, woda, MPGK, sprzatanie i inne.
+- Wystawianie miesięcznych rachunków.
+- Pozycje: czynsz, prąd, woda, MPGK, sprzątanie i inne.
 - Wiele kont bankowych do wyboru na rachunku.
-- Filtrowanie po miesiacu, roku, lokalu i statusie.
-- Oznaczanie rachunkow jako oplacone.
-- Podglad rachunku i eksport do PDF.
+- Filtrowanie po miesiącu, roku, lokalu i statusie.
+- Oznaczanie rachunków jako opłacone.
+- Podgląd rachunku i eksport do PDF.
 
-### Import rachunkow
+### Import rachunków
 
-- Import z Excela (`.xlsx`, `.xls`) z recznym mapowaniem kolumn.
+- Import z Excela (`.xlsx`, `.xls`) z ręcznym mapowaniem kolumn.
 - Import z PDF z tabelami danych.
-- Dedykowany parser PDF dla rachunkow w formacie `RACHUNEK NR X/RRRR`.
+- Dedykowany parser PDF dla rachunków w formacie `RACHUNEK NR X/RRRR`.
 
 ### Waloryzacja
 
-- Pobieranie wskaznika CPI z API BDL GUS.
-- Podglad nowych stawek przed zastosowaniem.
+- Pobieranie wskaźnika CPI z API BDL GUS.
+- Podgląd nowych stawek przed zastosowaniem.
 - Zapis historii waloryzacji.
-- Generowanie wyrownania lutowego.
+- Generowanie wyrównania lutowego.
 
-### Przeglady i Remonty
+### Przeglądy i Remonty
 
-- Ewidencja przegladow technicznych.
-- Alerty o zblizajacych sie terminach.
-- Historia remontow, kosztow i wykonawcow.
+- Ewidencja przeglądów technicznych.
+- Alerty o zbliżających się terminach.
+- Historia remontów, kosztów i wykonawców.
 
 ### Rozliczenia
 
-- Rozliczenia ze wspolwlascicielami wedlug udzialow procentowych.
-- Reczne pozycje kosztowe i przychodowe budynku.
+- Rozliczenia ze współwłaścicielami według udziałów procentowych.
+- Ręczne pozycje kosztowe i przychodowe budynku.
 - Eksport rozliczenia do PDF.
 
 ### Ustawienia
 
-- Lokalna albo sieciowa sciezka do bazy SQLite.
-- Obsluga wielu budynkow.
+- Lokalna albo sieciowa ścieżka do bazy SQLite.
+- Obsługa wielu budynków.
 - Konta bankowe.
 - Kopie zapasowe i przywracanie bazy.
 
@@ -67,7 +67,7 @@ rachunki z biezacego miesiaca, zaleglosci oraz zblizajace sie przeglady.
 
 | Element | Technologia |
 |---|---|
-| Jezyk | Python 3.11+ |
+| Język | Python 3.11+ |
 | GUI | PySide6 / Qt |
 | Baza danych | SQLite, WAL mode |
 | Import Excel | openpyxl |
@@ -87,8 +87,8 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-For an exact copy of the dependency versions used during development, install
-from the lock file instead:
+Aby odtworzyć dokładne wersje zależności używane podczas prac, zainstaluj pakiety
+z pliku lock:
 
 ```powershell
 python -m pip install -r requirements-lock.txt
@@ -100,9 +100,9 @@ python -m pip install -r requirements-lock.txt
 python main.py
 ```
 
-Przy pierwszym uruchomieniu aplikacja tworzy lub otwiera baze wskazana w
-`config.json`. Domyslnie jest to `zarzadca.db` w katalogu projektu. Sciezke mozna
-zmienic w aplikacji w panelu `Ustawienia -> Baza danych`.
+Przy pierwszym uruchomieniu aplikacja tworzy lub otwiera bazę wskazaną w
+`config.json`. Domyślnie jest to `zarzadca.db` w katalogu projektu. Ścieżkę można
+zmienić w aplikacji w panelu `Ustawienia -> Baza danych`.
 
 ## Testy
 
@@ -110,32 +110,32 @@ zmienic w aplikacji w panelu `Ustawienia -> Baza danych`.
 python -m pytest
 ```
 
-Testy uzywaja osobnych baz SQLite tworzonych w katalogu `test_runtime_dbs/`.
-Nie korzystaja z lokalnego pliku `zarzadca.db`.
+Testy używają osobnych baz SQLite tworzonych w katalogu `test_runtime_dbs/`.
+Nie korzystają z lokalnego pliku `zarzadca.db`.
 
-## Diagnostyka srodowiska
+## Diagnostyka środowiska
 
-Przy roznicach wygladu albo zachowania miedzy komputerami uruchom:
+Przy różnicach wyglądu albo zachowania między komputerami uruchom:
 
 ```powershell
 python tools\diagnose_env.py
 ```
 
-Skrypt wypisuje wersje Pythona, PySide6, Qt, aktywny styl Qt, dostepne style Qt
-oraz sciezke aktualnie skonfigurowanej bazy.
+Skrypt wypisuje wersję Pythona, PySide6, Qt, aktywny styl Qt, dostępne style Qt
+oraz ścieżkę aktualnie skonfigurowanej bazy.
 
 ## Konfiguracja sieci lokalnej
 
-Aby korzystac z jednej bazy na wielu komputerach:
+Aby korzystać z jednej bazy na wielu komputerach:
 
-1. Umiesc plik `zarzadca.db` na dysku sieciowym, np. `\\SERWER\Wspolny\zarzadca.db`.
-2. Na kazdym komputerze zainstaluj aplikacje.
-3. W `Ustawienia -> Baza danych` wpisz sciezke sieciowa.
-4. Kliknij `Zapisz i polacz`.
+1. Umieść plik `zarzadca.db` na dysku sieciowym, np. `\\SERWER\Wspolny\zarzadca.db`.
+2. Na każdym komputerze zainstaluj aplikację.
+3. W `Ustawienia -> Baza danych` wpisz ścieżkę sieciową.
+4. Kliknij `Zapisz i połącz`.
 
-Baza dziala w trybie WAL, ktory umozliwia jednoczesny odczyt przez wielu
-uzytkownikow. Uprawnienia do pliku bazy i katalogu z backupami powinny byc
-kontrolowane na poziomie Windows lub udzialu sieciowego.
+Baza działa w trybie WAL, który umożliwia jednoczesny odczyt przez wielu
+użytkowników. Uprawnienia do pliku bazy i katalogu z backupami powinny być
+kontrolowane na poziomie Windows lub udziału sieciowego.
 
 ## Licencje
 
@@ -145,14 +145,14 @@ Aplikacja szuka pliku licencji w:
 %APPDATA%\Zarzadca\license.lic
 ```
 
-Do generowania licencji sluzy:
+Do generowania licencji służy:
 
 ```powershell
 python tools\license_generator.py
 ```
 
 Generator wymaga prywatnego klucza `tools/private.pem`. Tego pliku nie wolno
-commitowac ani wysylac klientom.
+commitować ani wysyłać klientom.
 
 ## Build instalatora
 
@@ -163,8 +163,8 @@ tools\build.ps1
 tools\installer.iss
 ```
 
-Ten obszar wymaga osobnego uporzadkowania dokumentacji, bo historycznie projekt
-korzystal z PyQt6/PyInstaller, a aktualny kod uzywa PySide6 i build skryptu
+Ten obszar wymaga osobnego uporządkowania dokumentacji, bo historycznie projekt
+korzystał z PyQt6/PyInstaller, a aktualny kod używa PySide6 i build skryptu
 opartego o Nuitka.
 
 ## Autor
