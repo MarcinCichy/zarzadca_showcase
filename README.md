@@ -67,9 +67,9 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 
 | Element | Technologia |
 |---|---|
-| Język | Python 3.11+ |
+| Język | Python 3.13 (wspierana wersja produkcyjna; testowane na 3.13.14) |
 | GUI | PySide6 / Qt |
-| Baza danych | SQLite, WAL mode |
+| Baza danych | SQLite, WAL (lokalnie) / rollback journal (sieciowo) |
 | Import Excel | openpyxl |
 | Import PDF | pdfplumber |
 | Eksport PDF | reportlab |
@@ -77,7 +77,15 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 | Licencje | cryptography, podpis RSA |
 | Testy | pytest |
 
+Krótki przegląd warstw kodu (GUI, serwisy, DAO, baza, import, PDF, licencje):
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
 ## Instalacja developerska
+
+Wymagany Python 3.13. Na Python 3.14 obserwowano ostrzeżenie `Could not find
+platform independent libraries <prefix>` przy starcie — PySide6 6.11 nie było
+na nim testowane, więc do czasu potwierdzenia pełnej zgodności zalecane jest
+pozostanie przy 3.13.
 
 ```powershell
 git clone https://gitlab.com/MarcinCichy/zarzadca.git
@@ -133,11 +141,42 @@ Aby korzystać z jednej bazy na wielu komputerach:
 3. W `Ustawienia -> Baza danych` wpisz ścieżkę sieciową.
 4. Kliknij `Zapisz i połącz`.
 
-Baza działa w trybie WAL, który umożliwia jednoczesny odczyt przez wielu
-użytkowników. Uprawnienia do pliku bazy i katalogu z backupami powinny być
-kontrolowane na poziomie Windows lub udziału sieciowego.
+Na ścieżce sieciowej aplikacja automatycznie przełącza się z trybu WAL na
+zwykły rollback journal (`czy_sciezka_sieciowa()` w `database/db.py`) — WAL
+wymaga pliku pamięci współdzielonej, który nie zawsze działa poprawnie na
+sieciowych systemach plików (SMB/CIFS), więc na sieci wybieramy bezpieczniejszą
+opcję. Dodatkowo, przed otwarciem formularza edycji aplikacja ostrzega, jeśli
+ten sam rekord edytuje już ktoś inny (semafor z 30-minutowym leasingiem,
+`utils/blokady.py`) — to nie zastępuje ochrony przed nadpisaniem przy zapisie
+(`updated_at`), ale pozwala uniknąć sytuacji, w której dwie osoby wypełniają
+ten sam formularz jednocześnie.
+
+Uprawnienia do pliku bazy i katalogu z backupami powinny być
+kontrolowane na poziomie Windows lub udziału sieciowego:
+
+- Ogranicz dostęp do folderu z `zarzadca.db` i katalogu kopii zapasowych (`.zip`)
+  tylko do kont Windows osób, które faktycznie zarządzają nieruchomościami —
+  baza zawiera dane osobowe najemców (imię, nazwisko, telefon, email, NIP).
+- Na udziale sieciowym (`\\SERWER\...`) ustaw uprawnienia NTFS/udziału tak, aby
+  zapis mieli tylko zaufani użytkownicy aplikacji, nie "Wszyscy"/"Everyone".
+- Kopie zapasowe (`.zip`) zawierają pełną kopię bazy — traktuj je z tą samą
+  ostrożnością co plik `zarzadca.db`, nie zostawiaj ich w folderach współdzielonych
+  bez kontroli dostępu (np. publiczny folder Dropbox/OneDrive).
 
 ## Licencje
+
+**Ograniczenia obecnej ochrony licencyjnej:**
+
+- Plik `.lic` jest podpisany RSA-2048 — edycja jego zawartości (np. zmiana
+  `max_lokali`, `max_budynki` czy daty ważności) unieważnia podpis i licencja
+  przestaje działać. Ta część jest solidna.
+- Plik `.lic` **nie jest powiązany ze sprzętem** — nie ma sprawdzania numeru
+  seryjnego dysku, MAC adresu ani innego identyfikatora komputera. Skopiowanie
+  pliku `%APPDATA%\Zarzadca\license.lic` na inny komputer daje temu komputerowi
+  pełny dostęp do funkcji z tej licencji, bez ponownego zakupu. To znany,
+  świadomie zaakceptowany na razie kompromis — powiązanie z sprzętem to
+  osobne zadanie do rozważenia, jeśli skala sprzedaży zacznie czynić to
+  realnym problemem.
 
 Aplikacja szuka pliku licencji w:
 
@@ -154,18 +193,63 @@ python tools\license_generator.py
 Generator wymaga prywatnego klucza `tools/private.pem`. Tego pliku nie wolno
 commitować ani wysyłać klientom.
 
+**Bezpieczne przechowywanie `tools/private.pem`:**
+
+- To jedyny sekret, który pozwala wygenerować ważną licencję dla dowolnego
+  klienta — traktuj go jak klucz do całego modelu sprzedaży aplikacji, nie
+  jak zwykły plik konfiguracyjny.
+- Nie trzymaj go na dysku, który jest automatycznie synchronizowany do chmury
+  publicznej (OneDrive/Dropbox) bez szyfrowania, ani na współdzielonym
+  komputerze.
+- Zrób jedną zaszyfrowaną kopię zapasową (np. w menedżerze haseł obsługującym
+  załączniki, albo w zaszyfrowanym archiwum z osobnym hasłem) na wypadek awarii
+  dysku — bez kopii utrata pliku oznacza brak możliwości wystawienia nowych
+  licencji istniejącym i nowym klientom.
+- `.gitignore` już blokuje `tools/private.pem` i `tools/*.lic` przed
+  przypadkowym commitem (zweryfikowane testami `tests/test_license_validator.py`
+  dla samego mechanizmu podpisu) — to nie zastępuje ostrożności przy kopiowaniu
+  pliku ręcznie (np. między komputerami, na pendrive).
+
 ## Build instalatora
 
-Pipeline budowania jest opisany w:
+Wymagania jednorazowe:
+
+1. [Inno Setup 6](https://jrsoftware.org/isdl.php).
+2. Skonfigurowane `venv` z zainstalowanymi zależnościami (`pip install -r requirements.txt`).
+   Nuitka doinstaluje się automatycznie przy pierwszym uruchomieniu skryptu, jeśli jej brak.
+
+Uruchomienie (z katalogu głównego projektu):
 
 ```powershell
-tools\build.ps1
-tools\installer.iss
+.\tools\build.ps1
 ```
 
-Ten obszar wymaga osobnego uporządkowania dokumentacji, bo historycznie projekt
-korzystał z PyQt6/PyInstaller, a aktualny kod używa PySide6 i build skryptu
-opartego o Nuitka.
+Skrypt: eksportuje EULA do `tools\eula.txt`, kompiluje aplikację przez Nuitka
+(`--standalone`, PySide6, bez konsoli), a następnie buduje instalator przez
+Inno Setup (`tools\installer.iss`). Wynik trafia do
+`installer_output\Zarzadca_Setup_1.0.0.exe`.
+
+Nuitka kompiluje Python → C++ → natywny kod maszynowy (trudniejszy do
+zdekompilowania niż PyInstaller) i jest darmowa do użytku komercyjnego w
+edycji Community.
+
+⚠ Uruchomienie i przetestowanie zbudowanego instalatora na czystym systemie
+Windows bez Pythona **nie zostało jeszcze zweryfikowane** (patrz `PLAN.md`,
+Etap 11) — traktuj wynik `build.ps1` jako niesprawdzony do czasu takiego testu.
+
+## Checklist przed wydaniem nowej wersji
+
+1. `python -m pytest` — wszystkie testy zielone.
+2. Ręczny smoke test GUI: przejście po wszystkich panelach i zakładkach
+   Ustawień na kopii realnej bazy (`tests/test_gui_smoke.py` pokrywa to
+   automatycznie, ale warto też rzucić okiem na wygląd po większych zmianach GUI).
+3. `python tools\diagnose_env.py` — sprawdź wersję Pythona/PySide6/Qt na maszynie budującej.
+4. Zaktualizuj numer wersji w `gui/panels/ustawienia.py` (zakładka "O aplikacji")
+   i w `tools\installer.iss`.
+5. `.\tools\build.ps1` — zbuduj instalator.
+6. Zainstaluj i uruchom zbudowany `.exe` na czystej maszynie (bez Pythona/venv)
+   — potwierdź, że aplikacja startuje i podstawowe funkcje działają.
+7. Zaktualizuj `PLAN.md`/`refactor_plan.md`, jeśli wydanie zamyka jakiś etap.
 
 ## Autor
 
