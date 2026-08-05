@@ -69,13 +69,14 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 |---|---|
 | Język | Python 3.13 (wspierana wersja produkcyjna; testowane na 3.13.14) |
 | GUI | PySide6 / Qt |
-| Baza danych | SQLite, WAL (lokalnie) / rollback journal (sieciowo) |
+| Baza danych | SQLite, WAL (lokalnie) / rollback journal (sieciowo); opcjonalnie SQLCipher (szyfrowanie hasłem) |
 | Import Excel | openpyxl |
 | Import PDF | pdfplumber |
 | Eksport PDF | reportlab |
 | HTTP / GUS | requests |
 | Licencje | cryptography, podpis RSA |
 | Testy | pytest |
+| Typy statyczne | mypy |
 
 Krótki przegląd warstw kodu (GUI, serwisy, DAO, baza, import, PDF, licencje):
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
@@ -121,6 +122,19 @@ python -m pytest
 Testy używają osobnych baz SQLite tworzonych w katalogu `test_runtime_dbs/`.
 Nie korzystają z lokalnego pliku `zarzadca.db`.
 
+## Statyczne sprawdzanie typów
+
+```powershell
+python -m mypy database services utils gui importer main.py
+```
+
+Konfiguracja w `mypy.ini`. To nie jest krok wymagany do uruchomienia aplikacji —
+to osobne narzędzie, które czyta adnotacje typów (`: int`, `-> dict | None`, ...)
+i szuka niespójności między nimi *bez* uruchamiania kodu (np. funkcja obiecuje
+zwrócić `int`, a w pewnej ścieżce może zwrócić `None`). Warto uruchamiać przed
+commitem przy zmianach dotykających sygnatur funkcji — na dziś kod przechodzi
+bez błędów (`Success: no issues found`).
+
 ## Diagnostyka środowiska
 
 Przy różnicach wyglądu albo zachowania między komputerami uruchom:
@@ -162,6 +176,46 @@ kontrolowane na poziomie Windows lub udziału sieciowego:
 - Kopie zapasowe (`.zip`) zawierają pełną kopię bazy — traktuj je z tą samą
   ostrożnością co plik `zarzadca.db`, nie zostawiaj ich w folderach współdzielonych
   bez kontroli dostępu (np. publiczny folder Dropbox/OneDrive).
+
+## Szyfrowanie bazy danych
+
+Baza może być opcjonalnie zaszyfrowana (SQLCipher) — dane najemców (imię,
+nazwisko, telefon, email, adres) nie leżą wtedy w pliku `.db` czystym tekstem.
+Włącza się to w `Ustawienia -> Baza danych` przyciskiem **"Zaszyfruj bazę
+hasłem…"** (widoczny tylko gdy baza jeszcze nie jest zaszyfrowana). Oryginalny,
+niezaszyfrowany plik zostaje zachowany obok jako `*.przed_szyfrowaniem.bak` na
+wypadek problemów. Aplikacja pyta o hasło przy każdym starcie, gdy baza jest
+zaszyfrowana — zawsze, bez opcji "zapamiętaj to urządzenie".
+
+**Mechanizm (klucz podwójnie zawinięty, jak "recovery key" w BitLockerze):**
+losowy klucz główny (MEK) faktycznie szyfruje bazę i jest zapisany dwa razy w
+pliku `<baza>.db.keyring.json` obok pliku bazy (musi być dostępny na każdym
+stanowisku przy bazie na dysku sieciowym):
+
+- kopia **użytkownika** — hasłem klienta (PBKDF2 + AES-256-GCM),
+- kopia **odzyskiwania** — kluczem publicznym oddzielnej pary RSA-2048
+  przeznaczonej tylko do tego celu (`tools/db_recovery_genkeys.py`,
+  analogicznie do pary kluczy licencyjnych, ale celowo inna).
+
+**To nie jest szyfrowanie zero-knowledge** — kto ma plik keyringu i prywatny
+klucz odzyskiwania, ten odzyska dane bez hasła klienta. To świadomy kompromis
+na wypadek zapomnianego hasła (bez tego: zapomniane hasło = trwała utrata
+wszystkich danych najemców/rachunków klienta, bez możliwości odzyskania).
+**Ta konsekwencja musi być jasno opisana w polityce prywatności/EULA** — nie
+reklamuj tego jako "nikt oprócz Ciebie nie ma dostępu".
+
+**Odzyskiwanie dostępu klientowi, który zapomniał hasła:**
+
+1. Klient wysyła Ci (mailem) **tylko** swój plik `<nazwa_bazy>.db.keyring.json`
+   — nigdy całą bazę.
+2. `python tools\db_recover.py sciezka\do\przyslanego.keyring.json`
+3. Podajesz nowe hasło — skrypt zapisuje `*.recovered.keyring.json`.
+4. Odsyłasz ten plik klientowi; podmienia swój keyring i loguje się nowym hasłem.
+
+Wymaga `tools/db_recovery_private.pem` — wygeneruj raz przez
+`python tools\db_recovery_genkeys.py` i przechowuj z tą samą ostrożnością co
+`tools/private.pem` (patrz sekcja "Licencje" niżej): nigdy nie commituj, nigdy
+nie wysyłaj klientowi, zrób jedną zaszyfrowaną kopię zapasową.
 
 ## Licencje
 
@@ -240,16 +294,17 @@ Etap 11) — traktuj wynik `build.ps1` jako niesprawdzony do czasu takiego testu
 ## Checklist przed wydaniem nowej wersji
 
 1. `python -m pytest` — wszystkie testy zielone.
-2. Ręczny smoke test GUI: przejście po wszystkich panelach i zakładkach
+2. `python -m mypy database services utils gui importer main.py` — brak błędów.
+3. Ręczny smoke test GUI: przejście po wszystkich panelach i zakładkach
    Ustawień na kopii realnej bazy (`tests/test_gui_smoke.py` pokrywa to
    automatycznie, ale warto też rzucić okiem na wygląd po większych zmianach GUI).
-3. `python tools\diagnose_env.py` — sprawdź wersję Pythona/PySide6/Qt na maszynie budującej.
-4. Zaktualizuj numer wersji w `gui/panels/ustawienia.py` (zakładka "O aplikacji")
+4. `python tools\diagnose_env.py` — sprawdź wersję Pythona/PySide6/Qt na maszynie budującej.
+5. Zaktualizuj numer wersji w `gui/panels/ustawienia.py` (zakładka "O aplikacji")
    i w `tools\installer.iss`.
-5. `.\tools\build.ps1` — zbuduj instalator.
-6. Zainstaluj i uruchom zbudowany `.exe` na czystej maszynie (bez Pythona/venv)
+6. `.\tools\build.ps1` — zbuduj instalator.
+7. Zainstaluj i uruchom zbudowany `.exe` na czystej maszynie (bez Pythona/venv)
    — potwierdź, że aplikacja startuje i podstawowe funkcje działają.
-7. Zaktualizuj `PLAN.md`/`refactor_plan.md`, jeśli wydanie zamyka jakiś etap.
+8. Zaktualizuj `PLAN.md`/`refactor_plan.md`, jeśli wydanie zamyka jakiś etap.
 
 ## Autor
 
