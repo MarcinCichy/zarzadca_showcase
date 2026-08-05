@@ -81,6 +81,10 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 Krótki przegląd warstw kodu (GUI, serwisy, DAO, baza, import, PDF, licencje):
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+Instrukcja obsługi codziennej pracy z klientami (wydawanie licencji,
+sprawdzanie licencji, odzyskiwanie hasła do zaszyfrowanej bazy klienta):
+[`docs/PROCEDURY_ADMIN.md`](docs/PROCEDURY_ADMIN.md).
+
 ## Instalacja developerska
 
 Wymagany Python 3.13. Na Python 3.14 obserwowano ostrzeżenie `Could not find
