@@ -166,13 +166,19 @@ nie wysyłaj klientowi, zrób jedną zaszyfrowaną kopię zapasową.
 - Plik `.lic` jest podpisany RSA-2048 — edycja jego zawartości (np. zmiana
   `max_lokali`, `max_budynki` czy daty ważności) unieważnia podpis i licencja
   przestaje działać. Ta część jest solidna.
-- Plik `.lic` **nie jest powiązany ze sprzętem** — nie ma sprawdzania numeru
-  seryjnego dysku, MAC adresu ani innego identyfikatora komputera. Skopiowanie
-  pliku `%APPDATA%\Zarzadca\license.lic` na inny komputer daje temu komputerowi
-  pełny dostęp do funkcji z tej licencji, bez ponownego zakupu. To znany,
-  świadomie zaakceptowany na razie kompromis — powiązanie z sprzętem to
-  osobne zadanie do rozważenia, jeśli skala sprzedaży zacznie czynić to
-  realnym problemem.
+- Plik `.lic` **może (opcjonalnie) być powiązany z komputerem**: pole
+  `machine_id` w licencji (ten sam hash z adresu MAC + nazwy maszyny, którego
+  używa stan triala — `utils/trial_state.py::machine_id()`) jest częścią
+  podpisanego payloadu. Jeśli jest ustawione, aplikacja odrzuci licencję na
+  innym komputerze komunikatem "Ta licencja jest przypisana do innego
+  komputera". Okno wyboru licencji zawsze pokazuje ID bieżącego komputera z
+  przyciskiem "Kopiuj", żeby klient mógł je przesłać dostawcy przy zakupie
+  lub przeniesieniu licencji. Pole jest opcjonalne — licencje wygenerowane
+  bez `machine_id` (w tym wszystkie wydane przed wprowadzeniem tej funkcji)
+  nadal działają na dowolnym komputerze, więc to świadomy wybór dostawcy przy
+  każdej sprzedaży, nie wymuszenie. To nadal nie jest pełna aktywacja online —
+  nie ma centralnego rejestru "ile razy dana licencja została aktywowana",
+  tylko lokalne sprawdzenie zgodności ID komputera z tym zapisanym w pliku.
 - Stan triala jest zapisywany offline jako podpisany rekord z datą startu,
   datą ostatniego uruchomienia i identyfikatorem maszyny. Na Windows aplikacja
   zapisuje go w `%APPDATA%\Zarzadca\trial_state.json` oraz dodatkowo w rejestrze
