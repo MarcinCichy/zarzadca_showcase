@@ -85,70 +85,8 @@ Instrukcja obsługi codziennej pracy z klientami (wydawanie licencji,
 sprawdzanie licencji, odzyskiwanie hasła do zaszyfrowanej bazy klienta):
 [`docs/PROCEDURY_ADMIN.md`](docs/PROCEDURY_ADMIN.md).
 
-## Instalacja developerska
-
-Wymagany Python 3.13. Na Python 3.14 obserwowano ostrzeżenie `Could not find
-platform independent libraries <prefix>` przy starcie — PySide6 6.11 nie było
-na nim testowane, więc do czasu potwierdzenia pełnej zgodności zalecane jest
-pozostanie przy 3.13.
-
-```powershell
-git clone https://gitlab.com/MarcinCichy/zarzadca.git
-cd zarzadca
-python -m venv .venv
-.\.venv\Scripts\activate
-python -m pip install -r requirements.txt
-```
-
-Aby odtworzyć dokładne wersje zależności używane podczas prac, zainstaluj pakiety
-z pliku lock:
-
-```powershell
-python -m pip install -r requirements-lock.txt
-```
-
-## Uruchomienie
-
-```powershell
-python main.py
-```
-
-Przy pierwszym uruchomieniu aplikacja tworzy lub otwiera bazę wskazaną w
-`config.json`. Domyślnie jest to `zarzadca.db` w katalogu projektu. Ścieżkę można
-zmienić w aplikacji w panelu `Ustawienia -> Baza danych`.
-
-## Testy
-
-```powershell
-python -m pytest
-```
-
-Testy używają osobnych baz SQLite tworzonych w katalogu `test_runtime_dbs/`.
-Nie korzystają z lokalnego pliku `zarzadca.db`.
-
-## Statyczne sprawdzanie typów
-
-```powershell
-python -m mypy database services utils gui importer main.py
-```
-
-Konfiguracja w `mypy.ini`. To nie jest krok wymagany do uruchomienia aplikacji —
-to osobne narzędzie, które czyta adnotacje typów (`: int`, `-> dict | None`, ...)
-i szuka niespójności między nimi *bez* uruchamiania kodu (np. funkcja obiecuje
-zwrócić `int`, a w pewnej ścieżce może zwrócić `None`). Warto uruchamiać przed
-commitem przy zmianach dotykających sygnatur funkcji — na dziś kod przechodzi
-bez błędów (`Success: no issues found`).
-
-## Diagnostyka środowiska
-
-Przy różnicach wyglądu albo zachowania między komputerami uruchom:
-
-```powershell
-python tools\diagnose_env.py
-```
-
-Skrypt wypisuje wersję Pythona, PySide6, Qt, aktywny styl Qt, dostępne style Qt
-oraz ścieżkę aktualnie skonfigurowanej bazy.
+Instalacja deweloperska, uruchomienie testów i budowanie instalatora:
+[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
 ## Konfiguracja sieci lokalnej
 
@@ -276,48 +214,6 @@ commitować ani wysyłać klientom.
   przypadkowym commitem (zweryfikowane testami `tests/test_license_validator.py`
   dla samego mechanizmu podpisu) — to nie zastępuje ostrożności przy kopiowaniu
   pliku ręcznie (np. między komputerami, na pendrive).
-
-## Build instalatora
-
-Wymagania jednorazowe:
-
-1. [Inno Setup 6](https://jrsoftware.org/isdl.php).
-2. Skonfigurowane `venv` z zainstalowanymi zależnościami (`pip install -r requirements.txt`).
-   Nuitka doinstaluje się automatycznie przy pierwszym uruchomieniu skryptu, jeśli jej brak.
-
-Uruchomienie (z katalogu głównego projektu):
-
-```powershell
-.\tools\build.ps1
-```
-
-Skrypt: eksportuje EULA do `tools\eula.txt`, kompiluje aplikację przez Nuitka
-(`--standalone`, PySide6, bez konsoli), a następnie buduje instalator przez
-Inno Setup (`tools\installer.iss`). Wynik trafia do
-`installer_output\Zarzadca_Setup_1.0.0.exe`.
-
-Nuitka kompiluje Python → C++ → natywny kod maszynowy (trudniejszy do
-zdekompilowania niż PyInstaller) i jest darmowa do użytku komercyjnego w
-edycji Community.
-
-⚠ Uruchomienie i przetestowanie zbudowanego instalatora na czystym systemie
-Windows bez Pythona **nie zostało jeszcze zweryfikowane** (patrz `PLAN.md`,
-Etap 11) — traktuj wynik `build.ps1` jako niesprawdzony do czasu takiego testu.
-
-## Checklist przed wydaniem nowej wersji
-
-1. `python -m pytest` — wszystkie testy zielone.
-2. `python -m mypy database services utils gui importer main.py` — brak błędów.
-3. Ręczny smoke test GUI: przejście po wszystkich panelach i zakładkach
-   Ustawień na kopii realnej bazy (`tests/test_gui_smoke.py` pokrywa to
-   automatycznie, ale warto też rzucić okiem na wygląd po większych zmianach GUI).
-4. `python tools\diagnose_env.py` — sprawdź wersję Pythona/PySide6/Qt na maszynie budującej.
-5. Zaktualizuj numer wersji w `gui/panels/ustawienia.py` (zakładka "O aplikacji")
-   i w `tools\installer.iss`.
-6. `.\tools\build.ps1` — zbuduj instalator.
-7. Zainstaluj i uruchom zbudowany `.exe` na czystej maszynie (bez Pythona/venv)
-   — potwierdź, że aplikacja startuje i podstawowe funkcje działają.
-8. Zaktualizuj `PLAN.md`/`refactor_plan.md`, jeśli wydanie zamyka jakiś etap.
 
 ## Autor
 
