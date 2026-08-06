@@ -235,6 +235,15 @@ nie wysyłaj klientowi, zrób jedną zaszyfrowaną kopię zapasową.
   świadomie zaakceptowany na razie kompromis — powiązanie z sprzętem to
   osobne zadanie do rozważenia, jeśli skala sprzedaży zacznie czynić to
   realnym problemem.
+- Stan triala jest zapisywany offline jako podpisany rekord z datą startu,
+  datą ostatniego uruchomienia i identyfikatorem maszyny. Na Windows aplikacja
+  zapisuje go w `%APPDATA%\Zarzadca\trial_state.json` oraz dodatkowo w rejestrze
+  `HKCU\Software\Zarzadca\TrialState`; na macOS/Linux używany jest podpisany
+  plik w katalogu danych aplikacji. To utrudnia prostą edycję/reset triala i
+  wykrywa cofnięcie daty systemowej, ale nie jest tak mocne jak aktywacja online.
+- Docelowa aktywacja online będzie wymagała osobnego backendu/API, bazy danych
+  licencji i hostingu. Bez serwera aplikacja desktopowa zawsze przechowuje część
+  stanu lokalnie.
 
 Aplikacja szuka pliku licencji w:
 
