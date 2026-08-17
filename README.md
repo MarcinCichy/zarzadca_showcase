@@ -66,11 +66,11 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 
 ## Instalacja Windows
 
-Aktualne artefakty wydania `1.0.2` znajdują się po zbudowaniu w:
+Aktualne artefakty wydania `1.0.3` znajdują się po zbudowaniu w:
 
 ```text
 dist\Zarzadca\Zarzadca.exe
-installer_output\Zarzadca_Setup_1.0.2.exe
+installer_output\Zarzadca_Setup_1.0.3.exe
 ```
 
 Instalator działa per-user i nie wymaga uprawnień administratora. Przy aktualizacji
