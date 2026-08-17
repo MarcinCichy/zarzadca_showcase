@@ -64,39 +64,6 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 - Konta bankowe.
 - Kopie zapasowe i przywracanie bazy.
 
-## Instalacja Windows
-
-Aktualne artefakty wydania `1.0.3` znajdują się po zbudowaniu w:
-
-```text
-dist\Zarzadca\Zarzadca.exe
-installer_output\Zarzadca_Setup_1.0.3.exe
-```
-
-Instalator działa per-user i nie wymaga uprawnień administratora. Przy aktualizacji
-sprawdza poprzednią instalację zarówno w domyślnej lokalizacji, jak i przez
-`InstallLocation` zapisane w rejestrze deinstalatora (`HKCU`/`HKLM`), więc wykrywa
-także instalację na innym dysku lub w niestandardowym katalogu.
-
-## Trial i dane aplikacji
-
-Stan triala jest przechowywany w dwóch podpisanych kopiach:
-
-- `%APPDATA%\Zarzadca\trial_state.json`,
-- `HKCU\Software\Zarzadca\TrialState` w rejestrze Windows.
-
-Jeżeli jedna kopia zniknie, aplikacja może odtworzyć ją z drugiej. Baza danych,
-konfiguracja, licencja i logi są przechowywane w `%APPDATA%\Zarzadca`.
-
-## Deinstalacja
-
-Deinstalator przed usunięciem danych wyświetla ostrzeżenie o skasowaniu bazy,
-licencji, konfiguracji i logów oraz pyta, czy kontynuować. Przed potwierdzeniem
-należy wykonać kopię zapasową bazy, jeśli dane mają zostać zachowane.
-
-Deinstalacja usuwa `%APPDATA%\Zarzadca`, ale nie usuwa wpisu triala w rejestrze.
-Ponowna instalacja może dzięki temu odtworzyć plik stanu triala.
-
 ## Technologia
 
 | Element | Technologia |
