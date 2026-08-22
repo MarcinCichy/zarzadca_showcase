@@ -34,8 +34,7 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 
 ### Import rachunków
 
-- Import z Excela (`.xlsx`, `.xls`) z ręcznym mapowaniem kolumn.
-- Import z PDF z tabelami danych.
+- Import z PDF z tabelami danych, z ręcznym mapowaniem kolumn.
 - Dedykowany parser PDF dla rachunków w formacie `RACHUNEK NR X/RRRR`.
 
 ### Waloryzacja
@@ -71,7 +70,6 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 | Język | Python 3.13 (wspierana wersja produkcyjna; testowane na 3.13.14) |
 | GUI | PySide6 / Qt |
 | Baza danych | SQLite, WAL (lokalnie) / rollback journal (sieciowo); opcjonalnie SQLCipher (szyfrowanie hasłem) |
-| Import Excel | openpyxl |
 | Import PDF | pdfplumber |
 | Eksport PDF | reportlab |
 | HTTP / GUS | requests |
