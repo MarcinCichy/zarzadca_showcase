@@ -62,6 +62,10 @@ rachunki z bieżącego miesiąca, zaległości oraz zbliżające się przeglądy
 - Obsługa wielu budynków.
 - Konta bankowe.
 - Kopie zapasowe i przywracanie bazy.
+- Automatyczna kopia zapasowa przy uruchomieniu (częstotliwość, retencja,
+  folder docelowy) oraz opcjonalny harmonogram systemowy Windows (Task
+  Scheduler), uruchamiający kopię także wtedy, gdy aplikacja jest zamknięta —
+  dostępny tylko w zainstalowanej wersji.
 
 ## Technologia
 
